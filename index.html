@@ -2199,28 +2199,28 @@
             questions: [
               {
                 id: "u5_p2b_1",
-                prompt: "1. (Positive Command) ______ the bottom of the paper cups.",
+                prompt: "1. [Positive Command] ______ the bottom of the paper cups.",
                 choices: ["Cut", "Cutting"],
                 answer: "Cut",
                 explanation: "ประโยคคำสั่ง (Imperative) ต้องขึ้นต้นด้วยคำกริยาช่อง 1 รูปเดิม (Base Verb): Cut"
               },
               {
                 id: "u5_p2b_2",
-                prompt: "2. (Positive Command) ______ the file on your computer.",
+                prompt: "2. [Positive Command] ______ the file on your computer.",
                 choices: ["Open", "Opening"],
                 answer: "Open",
                 explanation: "เป็นประโยคบอกขั้นตอน/คำสั่ง จึงใช้ V.1 ขึ้นต้น: Open"
               },
               {
                 id: "u5_p2b_3",
-                prompt: "3. (Negative Command) ______ in your text books!",
+                prompt: "3. [Negative Command] ______ in your text books!",
                 choices: ["Don't write", "Not write"],
                 answer: "Don't write",
                 explanation: "ประโยคสั่งห้าม (Negative Imperative) ใช้โครงสร้าง Don't + V.1"
               },
               {
                 id: "u5_p2b_4",
-                prompt: "4. (Asking for Help) How ______ I print this 3D model?",
+                prompt: "4. [Asking for Help] How ______ I print this 3D model?",
                 choices: ["do", "does"],
                 answer: "do",
                 explanation: "ประโยคคำถามที่ประธานเป็น I ใช้กริยาช่วย do (How do I...?)"
@@ -2579,8 +2579,8 @@
               {
                 id: "u7_p3_7",
                 prompt: "7. Project Question: How did Leon and Eva present Elizabeth Blackwell's story?",
-                choices: ["(b) A comic with 7 pictures", "(a) A 3D model", "(c) A video clip"],
-                answer: "(b) A comic with 7 pictures",
+                choices: ["A comic with 7 pictures", "A 3D model", "A video clip"],
+                answer: "A comic with 7 pictures",
                 explanation: "Leon และ Eva นำเสนอชีวประวัติผ่านหนังสือการ์ตูนสั้น 7 ช่อง (A comic with 7 pictures)"
               }
             ]
@@ -2671,7 +2671,7 @@
               },
               {
                 id: "u8_p2_2",
-                prompt: "Nadia: OK, fine. (2) ______?\nClerk: Is that (3) Single or return?\nNadia: Return, please.\nClerk: That's £40, please.",
+                prompt: "Nadia: OK, fine. (2) ______?\nClerk: Is that (3) ______?\nNadia: Return, please.\nClerk: That's £40, please.",
                 choices: ["How much does it cost?", "What's the fastest way?", "Platform 2", "Single or return?"],
                 answer: "How much does it cost?",
                 explanation: "ประโยคถามราคาตั๋วรถไฟ: 'How much does it cost?'"
@@ -2734,21 +2734,21 @@
               },
               {
                 id: "u8_p3_6",
-                prompt: "6. Most students came to school ______ (by / on) bike.",
+                prompt: "6. Most students came to school ______ bike.",
                 choices: ["by", "on"],
                 answer: "by",
                 explanation: "ยานพาหนะใช้โครงสร้าง by + ยานพาหนะ เช่น by bike, by bus, by car"
               },
               {
                 id: "u8_p3_7",
-                prompt: "7. Two students preferred going to school ______ (by foot / on foot).",
+                prompt: "7. Two students preferred going to school ______ .",
                 choices: ["on foot", "by foot"],
                 answer: "on foot",
                 explanation: "สำนวนการเดินเท้าในภาษาอังกฤษ ใช้ 'on foot' เท่านั้น (ไม่ใช่ by foot)"
               },
               {
                 id: "u8_p3_8",
-                prompt: "8. For holidays, traveling ______ (by / in) car was the most popular option.",
+                prompt: "8. For holidays, traveling ______ car was the most popular option.",
                 choices: ["by", "in"],
                 answer: "by",
                 explanation: "การเดินทางด้วยรถยนต์ใช้ by car"
@@ -3015,6 +3015,66 @@
      * Render Exercise based on Unit Data
      * Larger typography, generous line heights, mobile-friendly wrapping
      */
+    
+    /**
+     * Formats multiple-choice prompts:
+     * - Turns dialogue lines (Speaker: Speech) into neat chat-style cards
+     * - Highlights blanks nicely without awkward line wraps
+     * - Converts [Tag] into beautiful category pills
+     */
+    function formatPromptForDisplay(promptText) {
+      if (!promptText) return '';
+
+      // Check if prompt has dialogue structure with multiple lines
+      if (promptText.includes(':') && promptText.includes('\n')) {
+        const lines = promptText.split('\n');
+        const formattedLines = lines.map(line => {
+          const match = line.match(/^([^:]+):\s*(.*)$/);
+          if (match) {
+            const speaker = match[1].trim();
+            const speech = match[2].trim();
+            // Highlight the blank if present
+            const highlightedSpeech = speech
+              .replace(/\((\d+)\)\s*_{3,}\??/g, '<span class="inline-flex items-center px-2 py-0.5 bg-amber-100 text-amber-900 border border-amber-300 rounded font-bold text-xs sm:text-sm mx-1 shadow-2xs">($1) ______?</span>')
+              .replace(/_{3,}\??/g, '<span class="inline-flex items-center px-2 py-0.5 bg-amber-100 text-amber-900 border border-amber-300 rounded font-bold text-xs sm:text-sm mx-1 shadow-2xs">______</span>');
+            
+            const isGuest = speaker.toLowerCase().includes('nadia') || speaker.toLowerCase().includes('leo') || speaker.toLowerCase().includes('kelly');
+            const badgeBg = isGuest ? 'bg-indigo-100 text-indigo-800 border-indigo-200' : 'bg-blue-100 text-blue-800 border-blue-200';
+
+            return `
+              <div class="flex items-start gap-2.5 p-2.5 sm:p-3 rounded-xl bg-white border border-slate-200 shadow-2xs">
+                <span class="px-2.5 py-0.5 rounded-lg text-xs font-bold border ${badgeBg} flex-shrink-0 mt-0.5 shadow-2xs">${speaker}</span>
+                <div class="text-xs sm:text-sm font-medium text-slate-800 leading-relaxed flex-1">${highlightedSpeech}</div>
+              </div>
+            `;
+          }
+          return `<div class="text-xs sm:text-sm font-medium text-slate-700 py-0.5">${line}</div>`;
+        });
+        return `<div class="space-y-1.5 w-full">${formattedLines.join('')}</div>`;
+      }
+
+      // Check for command tag like [Positive Command] or [Negative Command]
+      const tagMatch = promptText.match(/^(\d+\.\s*)?\[([^\]]+)\]\s*(.*)$/);
+      if (tagMatch) {
+        const num = tagMatch[1] || '';
+        const tag = tagMatch[2];
+        const rest = tagMatch[3];
+        const isNeg = tag.toLowerCase().includes('negative');
+        const badgeColor = isNeg ? 'bg-rose-100 text-rose-800 border-rose-200' : 'bg-blue-100 text-blue-800 border-blue-200';
+        return `
+          <div class="space-y-1.5 w-full">
+            <div>
+              <span class="inline-block px-2.5 py-0.5 rounded-lg text-xs font-bold border ${badgeColor} shadow-2xs">${tag}</span>
+            </div>
+            <div class="text-sm sm:text-base font-bold text-slate-800 leading-relaxed">${rest}</div>
+          </div>
+        `;
+      }
+
+      // Standard sentence prompt
+      return `<p class="font-bold text-sm sm:text-base text-slate-800 leading-relaxed flex-1">${promptText}</p>`;
+    }
+
     function renderExercise(unitKey) {
       const container = document.getElementById('exerciseContainer');
       const unit = UNITS_DATA[unitKey];
@@ -3090,10 +3150,11 @@
                   const bVal = blank ? (userAnswers[blank.id] || '') : '';
                   const blankNum = blankCounter + 1;
                   blankCounter++;
+                  const placeholderText = q.blanks.length > 1 ? `-- เลือกช่องที่ ${blankNum} --` : '-- แตะเลือกคำศัพท์ --';
                   const selectHtml = `
-                    <span class="inline-block mx-1 my-1 align-baseline">
-                      <select onchange="onAnswerChange('${blank ? blank.id : ''}', this.value)" class="px-3 py-2 text-xs sm:text-sm font-bold text-blue-950 bg-white border-2 ${bVal ? 'border-blue-600 bg-blue-50/70 shadow-xs' : 'border-slate-300'} rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
-                        <option value="">-- [ เลือกคำตอบช่องที่ ${blankNum} ] --</option>
+                    <span class="inline-block mx-1 my-0.5 align-middle">
+                      <select onchange="onAnswerChange('${blank ? blank.id : ''}', this.value)" class="px-3 py-1.5 text-xs sm:text-sm font-bold text-blue-950 bg-white border-2 ${bVal ? 'border-blue-600 bg-blue-50/70 shadow-xs' : 'border-slate-300'} rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition shadow-2xs max-w-[210px]">
+                        <option value="">${placeholderText}</option>
                         ${section.wordBank.map(wb => `
                           <option value="${wb}" ${bVal === wb ? 'selected' : ''}>${wb}</option>
                         `).join('')}
@@ -3164,10 +3225,10 @@
                 return `
                   <div id="card_${q.id}" class="question-card p-4 sm:p-5 rounded-2xl border border-slate-200 bg-slate-50 space-y-2.5">
                     <div class="flex items-start gap-2.5">
-                      <span class="w-7 h-7 rounded-lg bg-blue-100 text-blue-800 font-extrabold flex items-center justify-center text-xs flex-shrink-0 mt-0.5">
+                      <span class="w-7 h-7 rounded-lg bg-blue-100 text-blue-800 font-extrabold flex items-center justify-center text-xs flex-shrink-0 mt-0.5 shadow-2xs">
                         ${qIndex + 1}
                       </span>
-                      <p class="font-bold text-sm sm:text-base text-slate-800 whitespace-pre-line leading-relaxed flex-1">${q.prompt}</p>
+                      ${formatPromptForDisplay(q.prompt)}
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1 pl-0 sm:pl-9">
                       ${q.choices.map((c) => {
